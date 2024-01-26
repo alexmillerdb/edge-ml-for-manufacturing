@@ -11,6 +11,14 @@ parameters:
 - name: databricks_token
   type: string
 
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '2b8b254e-eba5-45da-9bee-c8c11611cf41'
+  imageRepository: 'mlmodel'
+  containerRegistry: 'alexmcontainerregistry.azurecr.io'
+  # dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+
 trigger: none
 
 pool:
@@ -44,15 +52,25 @@ steps:
   enabled: 'true'
 
 - script: |
-    docker build -t "alexmcontainerregistry/ml-model:v.${{ parameters.model_version }}" mlflow_docker/
+    docker build -t "alexmcontainerregistry/mlmodel:v.${{ parameters.model_version }}" mlflow_docker/
   displayName: 'Create Docker Image'
   enabled: 'true'
 
+# - task: Docker@2
+#     displayName: Build and push an image to container registry
+#     inputs:
+#       command: buildAndPush
+#       repository: $(imageRepository)
+#       # dockerfile: $(dockerfilePath)
+#       containerRegistry: $(dockerRegistryServiceConnection)
+#       tags: |
+#         $(tag)
+
 - task: Docker@2
-  displayName: 'Push Docker Image to ACR'
+  displayName: Build and push an image to container registry
   inputs:
-    containerRegistry: 'alexmcontainerregistry'
-    repository: 'ml-model'
-    command: 'push'
+    command: buildAndPush
+    containerRegistry: $(dockerRegistryServiceConnection)
+    repository: $(imageRepository)
     tags: 'v.${{ parameters.model_version }}'
     
