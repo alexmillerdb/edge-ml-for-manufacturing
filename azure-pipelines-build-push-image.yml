@@ -13,7 +13,7 @@ variables:
   dockerRegistryServiceConnection: '2b8b254e-eba5-45da-9bee-c8c11611cf41'
   imageRepository: 'mlmodel'
   containerRegistry: 'alexmcontainerregistry.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
+  # dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
@@ -33,7 +33,7 @@ stages:
       inputs:
         command: buildAndPush
         repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
+        # dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
